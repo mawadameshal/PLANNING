@@ -18,11 +18,27 @@ class CreateCommitteesTable extends Migration
             $table->string('committee_name');
             $table->integer('committee_type');
             $table->integer('committee_center_id')->unsigned()->nullable();
+            $table->integer('created_by')->unsigned()->nullable();
+            $table->integer('updated_by')->unsigned()->nullable();
+            $table->integer('deleted_by')->unsigned()->nullable();
             $table->softDeletes();
             $table->timestamps();
+
             $table->foreign('committee_center_id')
                   ->references('id')->on('committees')
                   ->onDelete('cascade');
+
+            $table->foreign('created_by')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('updated_by')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('deleted_by')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
         });
     }
 

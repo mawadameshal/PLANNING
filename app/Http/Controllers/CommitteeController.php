@@ -14,7 +14,9 @@ class CommitteeController extends Controller
      */
     public function index()
     {
-        return view('committee.index');
+
+        $committees = Committee::all();
+        return view('committee.list', compact('committees'));
     }
 
     /**
@@ -24,7 +26,7 @@ class CommitteeController extends Controller
      */
     public function create()
     {
-        //
+        return view('committee.create');
     }
 
     /**
@@ -35,7 +37,20 @@ class CommitteeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'committee_name'=>'required',
+            'committee_type'=> 'required',
+           // 'committee_center_id' => 'requiredif'
+        ]);
+ 
+        $committee = new Committee([
+            'committee_name' => $request->get('committee_name'),
+            'committee_type'=> $request->get('committee_type'),
+            'committee_center_id'=> $request->get('committee_center_id')
+        ]);
+ 
+        $committee->save();
+        return redirect('/committee')->with('success', 'Committee has been added');
     }
 
     /**
@@ -46,7 +61,7 @@ class CommitteeController extends Controller
      */
     public function show(Committee $committee)
     {
-        //
+        return view('committee.view',compact('committee'));
     }
 
     /**
@@ -57,7 +72,7 @@ class CommitteeController extends Controller
      */
     public function edit(Committee $committee)
     {
-        //
+        return view('committee.edit',compact('committee'));
     }
 
     /**
@@ -80,6 +95,7 @@ class CommitteeController extends Controller
      */
     public function destroy(Committee $committee)
     {
-        //
+        $committee->delete();
+        return redirect('/committee')->with('success', 'Committee deleted successfully');
     }
 }
