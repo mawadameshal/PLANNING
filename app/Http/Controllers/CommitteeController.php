@@ -26,7 +26,8 @@ class CommitteeController extends Controller
      */
     public function create()
     {
-        return view('committee.create');
+        $committees = Committee::where(['committee_type'=>1])->get();
+        return view('committee.create', compact('committees'));
     }
 
     /**
@@ -40,17 +41,15 @@ class CommitteeController extends Controller
         $request->validate([
             'committee_name'=>'required',
             'committee_type'=> 'required',
-           // 'committee_center_id' => 'requiredif'
+            'committee_center_id' => 'required_if:committee_type,=,2'
         ]);
- 
-        $committee = new Committee([
-            'committee_name' => $request->get('committee_name'),
-            'committee_type'=> $request->get('committee_type'),
-            'committee_center_id'=> $request->get('committee_center_id')
-        ]);
- 
-        $committee->save();
-        return redirect('/committee')->with('success', 'Committee has been added');
+        $commit = new Committee();
+        $commit->committee_name = $request->committee_name;
+        $commit->committee_type = $request->committee_type;
+        $commit->committee_center_id = $request->committee_center_id;
+        $commit->save();
+
+        return redirect('/committee')->with('success', 'تم إضافة اللجنة بنجاح');
     }
 
     /**
@@ -72,7 +71,8 @@ class CommitteeController extends Controller
      */
     public function edit(Committee $committee)
     {
-        return view('committee.edit',compact('committee'));
+        $committees = Committee::where(['committee_type'=>1])->get();
+        return view('committee.create', compact('committees','committee'));
     }
 
     /**
@@ -84,7 +84,15 @@ class CommitteeController extends Controller
      */
     public function update(Request $request, Committee $committee)
     {
-        //
+        $committee = Committee::find($id);
+        $committee->committee_name = $request->get('committee_name');
+        $committee->committee_type = $request->get('committee_type');
+        $committee->committee_center_id = $request->get('committee_center_id');
+ 
+        $committee->update();
+ 
+        return redirect('/committee')->with('success', 'تم تعديل اللجنة بنجاح');
+    
     }
 
     /**
@@ -96,6 +104,6 @@ class CommitteeController extends Controller
     public function destroy(Committee $committee)
     {
         $committee->delete();
-        return redirect('/committee')->with('success', 'Committee deleted successfully');
+        return redirect('/committee')->with('success', 'تم حذف اللجنة بنجاح');
     }
 }
